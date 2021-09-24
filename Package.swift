@@ -11,10 +11,10 @@ let package = Package(
             targets: ["Sr25519"]),
         .library(
             name: "Ed25519",
-            targets: ["Ed25519"]),
+            targets: ["Ed25519"])
     ],
     dependencies: [
-        .package(url: "https://github.com/tesseract-one/UncommonCrypto.swift.git", from: "0.1.0")
+        .package(url: "https://github.com/lishuailibertine/UncommonCrypto.swift", from: "0.1.4")
     ],
     targets: [
         .target(
@@ -38,11 +38,11 @@ let package = Package(
         .target(
             name: "Sr25519Helpers",
             dependencies: ["CSr25519"]),
-        .testTarget(
-            name: "Sr25519Tests",
-            dependencies: ["Sr25519"]),
-        .testTarget(
-            name: "Ed25519Tests",
-            dependencies: ["Ed25519"])
+//        .testTarget(
+//            name: "Sr25519Tests",
+//            dependencies: ["Sr25519"]),
+//        .testTarget(
+//            name: "Ed25519Tests",
+//            dependencies: ["Ed25519"])
     ]
 )
