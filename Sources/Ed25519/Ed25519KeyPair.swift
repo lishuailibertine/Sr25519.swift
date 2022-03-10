@@ -92,7 +92,7 @@ extension Ed25519KeyPair: Hashable {
 }
 
 extension Ed25519KeyPair {
-    public func deriveKey(path: String, seed: Data) -> (key: Data, chainCode: Data) {
+    public static func deriveKey(path: String, seed: Data) -> (key: Data, chainCode: Data) {
         let masterKeyData = Data(HMAC.authenticate(type: .sha512, key: [UInt8]("ed25519 seed".utf8), data: seed))
         
         let key = masterKeyData.subdata(in:0..<32)
@@ -101,7 +101,7 @@ extension Ed25519KeyPair {
         return deriveKey(path: path, key: key, chainCode: chainCode)
     }
     
-    public func deriveKey(path: String, key: Data, chainCode: Data) -> (key: Data, chainCode: Data) {
+    public static func deriveKey(path: String, key: Data, chainCode: Data) -> (key: Data, chainCode: Data) {
         let paths = path.components(separatedBy: "/")
 
         var newKey = key

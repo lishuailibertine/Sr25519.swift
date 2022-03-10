@@ -63,4 +63,13 @@ final class Ed25519KeyPairTests: XCTestCase {
         XCTAssertTrue(pair.verify(message: message, signature: signature))
         XCTAssertFalse(pair.verify(message: Data("message".utf8), signature: signature))
     }
+    
+    func testDeriveKeyExample() {
+        let seed = "c0a89aa92449452284384c4d56103e26b855ebe47be469dfcb59b49f19f158dbf2855b49dfa3670a21cabaf0d1685c43e65151799b53be3e3cdbedfb6258ecc3".hexData!
+        let (key, chainCode) = Ed25519KeyPair.deriveKey(path: "m/44'/1729'/0'/0'", seed: seed)
+        
+        // b9b77dc3630cd30961520f5ac0a26c47b7af8323aa53177659af643c68ef9173
+        debugPrint("key", key.hex)
+        debugPrint("chainCode", chainCode.hex)
+    }
 }

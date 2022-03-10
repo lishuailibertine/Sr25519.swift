@@ -38,11 +38,11 @@ let package = Package(
         .target(
             name: "Sr25519Helpers",
             dependencies: ["CSr25519"]),
-//        .testTarget(
-//            name: "Sr25519Tests",
-//            dependencies: ["Sr25519"]),
-//        .testTarget(
-//            name: "Ed25519Tests",
-//            dependencies: ["Ed25519"])
+        .testTarget(
+            name: "Sr25519Tests",
+            dependencies: ["Sr25519"]),
+        .testTarget(
+            name: "Ed25519Tests",
+            dependencies: ["Ed25519"])
     ]
 )
