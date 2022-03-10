@@ -10,6 +10,7 @@ import Foundation
 import CSr25519
 import Sr25519Helpers
 #endif
+import UncommonCrypto
 
 public struct Ed25519KeyPair {
     private let _private: ed25519_secret_key
@@ -87,5 +88,47 @@ extension Ed25519KeyPair: Hashable {
     public func hash(into hasher: inout Hasher) {
         TCArray.hash(_private, in: &hasher)
         hasher.combine(_public)
+    }
+}
+
+extension Ed25519KeyPair {
+    public static func deriveKey(path: String, seed: Data) -> (key: Data, chainCode: Data) {
+        let masterKeyData = Data(HMAC.authenticate(type: .sha512, key: [UInt8]("ed25519 seed".utf8), data: seed))
+        
+        let key = masterKeyData.subdata(in:0..<32)
+        let chainCode = masterKeyData.subdata(in:32..<64)
+        
+        return deriveKey(path: path, key: key, chainCode: chainCode)
+    }
+    
+    public static func deriveKey(path: String, key: Data, chainCode: Data) -> (key: Data, chainCode: Data) {
+        let paths = path.components(separatedBy: "/")
+
+        var newKey = key
+        var newChainCode = chainCode
+        
+        for path in paths {
+            if path == "m" {
+                continue
+            }
+            var hpath:UInt32 = 0
+            if path.contains("'") {
+                let pathnum = UInt32(path.replacingOccurrences(of: "'", with: "")) ?? 0
+                hpath = pathnum + 0x80000000
+            } else {
+                hpath = UInt32(path) ?? 0
+            }
+            let pathData32 = UInt32(hpath)
+            let pathDataBE = withUnsafeBytes(of: pathData32.bigEndian, Array.init)
+            var data = Data()
+            data.append([0], count: 1)
+            data.append(newKey)
+            data.append(pathDataBE,count: 4)
+            
+            let d = Data(HMAC.authenticate(type: .sha512, key: Array(newChainCode), data: data))
+            newKey = d.subdata(in: 0..<32)
+            newChainCode = d.subdata(in:32..<64)
+        }
+        return (newKey, newChainCode)
     }
 }
