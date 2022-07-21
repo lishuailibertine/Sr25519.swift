@@ -129,6 +129,21 @@ void sr25519_keypair_from_seed(sr25519_keypair keypair, const sr25519_mini_secre
     memcpy(keypair + 64, public_key, 32);
 }
 
+void sr25519_keypair_from_secret_key(sr25519_keypair keypair, const sr25519_secret_key secret_key) {
+    sr25519_secret_key_key secret_key_key = {0};
+    memcpy(secret_key_key, secret_key, 32);
+    divide_scalar_bytes_by_cofactor(secret_key_key, 32);
+
+    sr25519_secret_key_nonce secret_key_nonce = {0};
+    memcpy(secret_key_nonce, secret_key + 32, 32);
+    sr25519_public_key public_key = {0};
+
+    private_key_to_publuc_key(public_key, secret_key_key);
+
+    memcpy(keypair, secret_key, 64);
+    memcpy(keypair + 64, public_key, 32);
+}
+
 void sr25519_uniform_keypair_from_seed(sr25519_keypair keypair, const sr25519_mini_secret_key mini_secret_key) {
     sr25519_secret_key_key secret_key_key = {0};
     sr25519_secret_key_nonce secret_key_nonce = {0};
