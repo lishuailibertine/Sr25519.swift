@@ -46,6 +46,12 @@ typedef struct VrfResult {
 void sr25519_keypair_from_seed(sr25519_keypair keypair, const sr25519_mini_secret_key seed);
 
 /*
+ * keypair: the output ed25519 compatible keypair, 96 bytes long
+ * secret key: the input secret key, 64 bytes long
+*/
+void sr25519_keypair_from_secret_key(sr25519_keypair keypair, const sr25519_secret_key secret_key);
+
+/*
  * keypair: the output uniform keypair, 96 bytes long
  * seed: the input mini secret key, 32 bytes long
 */
