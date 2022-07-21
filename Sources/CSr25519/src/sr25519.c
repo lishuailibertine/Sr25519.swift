@@ -107,7 +107,7 @@ void derived_secret_key_simple(sr25519_secret_key_key key_out, sr25519_secret_ke
     merlin_rng_random_bytes(&mrng, nonce_out, 32);
 }
 
-void private_key_to_publuc_key(const sr25519_public_key public_key, sr25519_secret_key private_key) {
+void private_key_to_publuc_key(sr25519_public_key public_key, sr25519_secret_key private_key) {
     ge25519 P = {0};
     bignum256modm s = {0};
     expand_raw256_modm(s, private_key);

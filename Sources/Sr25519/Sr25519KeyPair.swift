@@ -10,22 +10,7 @@ import Foundation
 import CSr25519
 import Sr25519Helpers
 #endif
-public struct Sr25519Secretkey {
-    let secret: sr25519_secret_key
-    public init(raw: Data) throws {
-        guard raw.count == Self.size else {
-            throw Sr25519Error.badSeedLength(
-                length: raw.count, expected: Self.size
-            )
-        }
-        self.init(secretkey: try! TCArray.new(raw: raw))
-    }
-    
-    init(secretkey: sr25519_secret_key) {
-        self.secret = secretkey
-    }
-    public static let size: Int = MemoryLayout<sr25519_secret_key>.size
-}
+
 public struct Sr25519KeyPair {
     private let _private: sr25519_secret_key
     private let _public: Sr25519PublicKey
@@ -48,16 +33,6 @@ public struct Sr25519KeyPair {
         }
         self.init(keypair: try! TCArray.new(raw: raw))
     }
-    public init(secretkey: Sr25519Secretkey) throws {
-        _private = secretkey.secret
-        var pub: sr25519_public_key = TCArray.new()
-        TCArray
-            .pointer(of: (UInt8.self, UInt8.self))
-            .wrap(&pub, secretkey.secret) { pub, priv in
-                private_key_to_publuc_key(priv.baseAddress, pub.baseAddress)
-            }
-        _public = Sr25519PublicKey(key: pub)
-    }
     
     init(keypair: sr25519_keypair) {
         (_private, _public) = TCArray
@@ -69,6 +44,7 @@ public struct Sr25519KeyPair {
                 )
             }
     }
+    
     public var publicKey: Sr25519PublicKey { _public }
     
     public var raw: Data { TCArray.get(raw: keyPair) }
