@@ -34,6 +34,17 @@ public struct Sr25519KeyPair {
         self.init(keypair: try! TCArray.new(raw: raw))
     }
     
+    public init(secretkey: Sr25519Secretkey) throws {
+        _private = secretkey.secret
+        var pub: sr25519_public_key = TCArray.new()
+        TCArray
+            .pointer(of: (UInt8.self, UInt8.self))
+            .wrap(&pub, secretkey.secret) { pub, priv in
+                private_key_to_publuc_key(priv.baseAddress, pub.baseAddress)
+            }
+        _public = Sr25519PublicKey(key: pub)
+    }
+    
     init(keypair: sr25519_keypair) {
         (_private, _public) = TCArray
             .pointer(of: UInt8.self)
