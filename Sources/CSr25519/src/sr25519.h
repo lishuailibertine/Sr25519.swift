@@ -38,7 +38,7 @@ typedef struct VrfResult {
     bool is_less;
 } VrfResult;
 
-
+void private_key_to_publuc_key(const sr25519_public_key public_key, sr25519_secret_key private_key);
 /*
  * keypair: the output ed25519 compatible keypair, 96 bytes long
  * seed: the input mini secret key, 32 bytes long
