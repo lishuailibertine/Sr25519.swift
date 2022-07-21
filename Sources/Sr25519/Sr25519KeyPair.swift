@@ -34,15 +34,22 @@ public struct Sr25519KeyPair {
         self.init(keypair: try! TCArray.new(raw: raw))
     }
     
-    public init(secretkey: Sr25519Secretkey) throws {
-        _private = secretkey.secret
-        var pub: sr25519_public_key = TCArray.new()
+    public init(rawSk: Data) throws {
+        guard rawSk.count == Self.secretSize else {
+            throw Sr25519Error.badKeyPairLength(
+                length: rawSk.count, expected: Self.secretSize
+            )
+        }
+        var pair: sr25519_keypair = TCArray.new()
         TCArray
-            .pointer(of: (UInt8.self, UInt8.self))
-            .wrap(&pub, secretkey.secret) { pub, priv in
-                private_key_to_publuc_key(priv.baseAddress, pub.baseAddress)
+            .pointer(of: UInt8.self)
+            .wrap(&pair) { kp in
+                rawSk.withUnsafeBytes { sk in
+                    let secKey = sk.bindMemory(to: UInt8.self)
+                    sr25519_keypair_from_secret_key(kp.baseAddress, secKey.baseAddress)
+                }
             }
-        _public = Sr25519PublicKey(key: pub)
+        self.init(keypair: pair)
     }
     
     init(keypair: sr25519_keypair) {
